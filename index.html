@@ -404,71 +404,155 @@
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // --- Particle network in the hero ---
-  var canvas = document.getElementById('bg-fx');
-  var hero = document.querySelector('.hero');
-  if (canvas && hero) {
-    var ctx = canvas.getContext('2d');
-    var w, h, particles, raf;
+ var canvas = document.getElementById('bg-fx');
+var hero = document.querySelector('.hero');
 
-    function resize() {
-      w = canvas.width = hero.clientWidth;
-      h = canvas.height = hero.clientHeight;
+if (canvas && hero) {
+  var ctx = canvas.getContext('2d');
+  var w, h, particles = [];
+  var raf = null;
+  var lastTime = 0;
+  var resizeTimer = null;
+
+  var isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+  var maxParticles = isMobile ? 28 : 55;
+  var connectionDistance = isMobile ? 100 : 118;
+
+  function resize() {
+    w = hero.clientWidth;
+    h = hero.clientHeight;
+
+    // Evita que móviles con DPR alto creen un canvas gigantesco
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function build() {
+    var count = Math.max(
+      15,
+      Math.min(maxParticles, Math.floor(w / 30))
+    );
+
+    particles = [];
+
+    for (var i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+
+        // Velocidad en píxeles/segundo
+        vx: (Math.random() - 0.5) * 20,
+        vy: (Math.random() - 0.5) * 20,
+
+        r: Math.random() * 1.4 + 0.6
+      });
+    }
+  }
+
+  function frame(time) {
+    if (!lastTime) lastTime = time;
+
+    // Evita saltos enormes después de minimizar/cambiar de pestaña
+    var delta = Math.min((time - lastTime) / 1000, 0.033);
+    lastTime = time;
+
+    ctx.clearRect(0, 0, w, h);
+
+    // Partículas
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+
+      p.x += p.vx * delta;
+      p.y += p.vy * delta;
+
+      if (p.x < 0) {
+        p.x = 0;
+        p.vx = Math.abs(p.vx);
+      } else if (p.x > w) {
+        p.x = w;
+        p.vx = -Math.abs(p.vx);
+      }
+
+      if (p.y < 0) {
+        p.y = 0;
+        p.vy = Math.abs(p.vy);
+      } else if (p.y > h) {
+        p.y = h;
+        p.vy = -Math.abs(p.vy);
+      }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 61, 26, 0.55)';
+      ctx.fill();
     }
 
-    function build() {
-      var count = Math.max(18, Math.min(55, Math.floor(w / 26)));
-      particles = [];
-      for (var i = 0; i < count; i++) {
-        particles.push({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          vx: (Math.random() - 0.5) * 0.35,
-          vy: (Math.random() - 0.5) * 0.35,
-          r: Math.random() * 1.5 + 0.6
-        });
-      }
-    }
+    // Conexiones
+    for (var a = 0; a < particles.length; a++) {
+      for (var b = a + 1; b < particles.length; b++) {
 
-    function frame() {
-      ctx.clearRect(0, 0, w, h);
-      for (var i = 0; i < particles.length; i++) {
-        var p = particles[i];
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < 0 || p.x > w) p.vx *= -1;
-        if (p.y < 0 || p.y > h) p.vy *= -1;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 61, 26, 0.55)';
-        ctx.fill();
-      }
-      for (var a = 0; a < particles.length; a++) {
-        for (var b = a + 1; b < particles.length; b++) {
-          var dx = particles[a].x - particles[b].x;
-          var dy = particles[a].y - particles[b].y;
-          var dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 118) {
-            ctx.strokeStyle = 'rgba(255, 61, 26, ' + (0.14 * (1 - dist / 118)) + ')';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(particles[a].x, particles[a].y);
-            ctx.lineTo(particles[b].x, particles[b].y);
-            ctx.stroke();
-          }
+        var dx = particles[a].x - particles[b].x;
+        var dy = particles[a].y - particles[b].y;
+        var distSq = dx * dx + dy * dy;
+
+        // Evitamos sqrt si están demasiado lejos
+        if (distSq < connectionDistance * connectionDistance) {
+          var dist = Math.sqrt(distSq);
+
+          ctx.strokeStyle =
+            'rgba(255, 61, 26, ' +
+            (0.14 * (1 - dist / connectionDistance)) +
+            ')';
+
+          ctx.lineWidth = 1;
+
+          ctx.beginPath();
+          ctx.moveTo(particles[a].x, particles[a].y);
+          ctx.lineTo(particles[b].x, particles[b].y);
+          ctx.stroke();
         }
       }
-      if (!reduced) raf = requestAnimationFrame(frame);
     }
 
+    raf = requestAnimationFrame(frame);
+  }
+
+  function restart() {
     resize();
     build();
-    frame();
-    window.addEventListener('resize', function () {
+
+    lastTime = 0;
+
+    if (raf) {
       cancelAnimationFrame(raf);
-      resize();
-      build();
-      frame();
-    });
+    }
+
+    raf = requestAnimationFrame(frame);
   }
+
+  resize();
+  build();
+  raf = requestAnimationFrame(frame);
+
+  // Debounce: no reconstruye todo el sistema 20 veces
+  // mientras el navegador móvil está cambiando de tamaño.
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+
+    resizeTimer = setTimeout(function () {
+      restart();
+    }, 200);
+  });
+}
+
 
   // --- Cursor glow follows the pointer ---
   if (!reduced) {
