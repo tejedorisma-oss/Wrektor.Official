@@ -1,120 +1,541 @@
 <!DOCTYPE html>
 <html lang="es">
-
-<style>
-     body {
-            background-color: #0b0c10;
-            color: #c5c6c7;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 40px;
-        }
-
-        ul {
-            padding: 0;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        li {
-            list-style: none;
-            padding: 20px 25px;
-            background-color: #1f2833;
-            margin-bottom: 15px;
-            border-left: 5px solid #f77a4c;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            transition: all 0.3s ease;
-        }
-
-        li span {
-            font-size: 16px;
-            letter-spacing: 0.5px;
-        }
-
-        li strong {
-            color: #ffffff;
-            text-transform: uppercase;
-        }
-
-        li:hover {
-            background-color: #24303f;
-            border-left-color: #ff4400;
-            transform: translateX(5px);
-        }
-
-        .btn-dark-aesthetic {
-            background-color: transparent;
-            color: #ff0000;
-            text-decoration: none;
-            padding: 8px 20px;
-            border: 2px solid #ff0000;
-            border-radius: 2px;
-            font-weight: bold;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.2s ease-in-out;
-        }
-
-        .btn-dark-aesthetic:hover {
-            background-color: #fc6666;
-            color: #0b0c10;
-            box-shadow: 0 0 15px #fc6666;
-            cursor: pointer;
-        }
-    </style>
-</style>
-
 <head>
-    <meta charset="UTF-8">
-    <title>Sitio Oficial de Wrektor</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wrektor — Sitio Oficial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #16181c;
+    --line: #26292f;
+    --ink: #ece9e4;
+    --muted: #8a8d93;
+    --accent: #ff3d1a;
+    --accent-soft: #ffb199;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: inherit; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, Segoe UI, Arial, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---- Hero ---- */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 96px 0 64px;
+    border-bottom: 1px solid var(--line);
+  }
+  #bg-fx {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  #cursor-glow {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    background: radial-gradient(560px circle at var(--mx, 50%) var(--my, 30%), rgba(255, 61, 26, 0.14), transparent 62%);
+  }
+  .hero h1, .hero .tagline, .hero .social-row {
+    position: relative;
+    z-index: 1;
+  }
+  .hero h1 {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    font-size: clamp(64px, 16vw, 148px);
+    line-height: 0.86;
+    letter-spacing: 0.5px;
+    margin: 0;
+    background: linear-gradient(110deg, var(--ink) 22%, var(--accent) 42%, var(--accent-soft) 52%, var(--ink) 72%);
+    background-size: 260% 100%;
+    background-position: 200% 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: sheen 3.2s ease-out 0.2s 1 forwards;
+  }
+  @keyframes sheen {
+    to { background-position: -40% 0; }
+  }
+  .hero h1.glitch { display: inline-block; }
+  .hero h1.glitch::before,
+  .hero h1.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: none;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+    opacity: 0;
+  }
+  .hero h1.glitch:hover::before {
+    color: var(--accent);
+    opacity: 0.8;
+    clip-path: inset(0 0 55% 0);
+    animation: glitch-a 0.5s steps(2) infinite;
+  }
+  .hero h1.glitch:hover::after {
+    color: var(--accent-soft);
+    opacity: 0.8;
+    clip-path: inset(45% 0 0 0);
+    animation: glitch-b 0.4s steps(2) infinite reverse;
+  }
+  @keyframes glitch-a {
+    0% { transform: translate(-4px, -2px); }
+    50% { transform: translate(3px, 1px); }
+    100% { transform: translate(-2px, 3px); }
+  }
+  @keyframes glitch-b {
+    0% { transform: translate(4px, 2px); }
+    50% { transform: translate(-3px, -1px); }
+    100% { transform: translate(2px, -3px); }
+  }
+  .hero .tagline {
+    margin: 20px 0 0;
+    max-width: 46ch;
+    color: var(--muted);
+    font-size: 17px;
+  }
+  .social-row {
+    display: flex;
+    gap: 28px;
+    margin-top: 36px;
+    flex-wrap: wrap;
+  }
+  .social-row a {
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    padding-bottom: 4px;
+    border-bottom: 2px solid var(--line);
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .social-row a:hover, .social-row a:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent-soft);
+  }
+  .social-row a.muted { color: var(--muted); border-color: transparent; cursor: default; }
+  .social-row a.muted:hover { color: var(--muted); border-color: transparent; }
+
+  /* ---- Bio ---- */
+  .bio {
+    padding: 64px 0;
+    border-bottom: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 32px;
+  }
+  .bio .stat {
+    font-family: 'Anton', sans-serif;
+    font-size: 56px;
+    line-height: 0.9;
+    color: var(--accent);
+  }
+  .bio .stat small {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-top: 8px;
+    letter-spacing: 0.3px;
+  }
+  .bio p { margin: 0; color: var(--ink); font-size: 16px; max-width: 52ch; }
+
+  /* ---- Dates ---- */
+  .dates { padding: 64px 0; border-bottom: 1px solid var(--line); }
+  .dates h2 {
+    position: relative;
+    display: inline-block;
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    font-size: 28px;
+    margin: 0 0 34px;
+    letter-spacing: 0.3px;
+    padding-bottom: 12px;
+  }
+  .dates h2::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 0;
+    background: var(--accent);
+    transition: width 0.9s ease;
+  }
+  .dates h2.is-visible::after { width: 100%; }
+  .date-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 20px 12px;
+    margin: 0 -12px;
+    border-top: 1px solid var(--line);
+    border-radius: 3px;
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease, background-position 0.4s ease;
+    background: linear-gradient(90deg, rgba(255, 61, 26, 0.1), rgba(255, 61, 26, 0) 65%);
+    background-size: 250% 100%;
+    background-position: 100% 0;
+  }
+  .date-item.from-left { transform: translateX(-26px); }
+  .date-item.from-right { transform: translateX(26px); }
+  .date-item.is-visible { opacity: 1; transform: translateX(0); }
+  .date-item:hover { background-position: 0 0; }
+  .date-item:hover .day { color: var(--accent); transform: scale(1.1); }
+  .date-item:hover .action { transform: translateX(4px); }
+  .date-item:last-child { padding-bottom: 20px; }
+  .date-item.featured {
+    position: relative;
+    padding-left: 14px;
+    margin-left: -14px;
+  }
+  .date-item.featured::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    bottom: 4px;
+    width: 3px;
+    background: var(--accent);
+    animation: pulse-glow 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 0 rgba(255, 61, 26, 0); }
+    50% { box-shadow: 0 0 14px rgba(255, 61, 26, 0.6); }
+  }
+  .countdown { display: flex; gap: 16px; margin-top: 12px; }
+  .cd-unit { display: flex; flex-direction: column; align-items: center; min-width: 34px; }
+  .cd-num {
+    font-family: 'Anton', sans-serif;
+    font-size: 24px;
+    color: var(--accent);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .cd-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-top: 3px;
+  }
+  .date-item .day {
+    font-family: 'Anton', sans-serif;
+    font-size: 34px;
+    color: var(--ink);
+    min-width: 56px;
+    transition: transform 0.3s ease, color 0.3s ease;
+  }
+  .date-item .month {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    min-width: 64px;
+  }
+  .date-item .info { flex: 1; }
+  .date-item .info .title { font-weight: 600; font-size: 16px; }
+  .date-item .info .venue { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .date-item .action {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: transform 0.25s ease, color 0.25s ease;
+  }
+  .date-item .action:hover, .date-item .action:focus-visible { color: var(--accent-soft); }
+  .date-item.featured .day, .date-item.featured .title { color: var(--accent); }
+
+  /* ---- Contact ---- */
+  footer { padding: 56px 0 80px; }
+  footer h2 {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    font-size: 28px;
+    margin: 0 0 16px;
+  }
+  footer a {
+    color: var(--accent-soft);
+    text-decoration: none;
+    font-size: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  footer a:hover, footer a:focus-visible { color: var(--accent); border-color: var(--accent); }
+  footer .fine { margin-top: 40px; color: var(--muted); font-size: 13px; }
+
+  @media (max-width: 520px) {
+    .bio { grid-template-columns: 1fr; gap: 8px; }
+    .date-item { flex-wrap: wrap; }
+    .date-item .action { margin-left: 80px; }
+  }
+
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent-soft);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+    .hero h1 { background-position: 0 0; }
+    .date-item { opacity: 1; transform: none; background-position: 0 0; }
+    .dates h2::after { width: 100%; }
+    #cursor-glow { display: none; }
+  }
+</style>
 </head>
 <body>
 
-<header>
-     <p style="text-align: center;">
-        <img src="descarga.png" alt="Wrektor" style="width: 350px; height: 300px;">
-     </p>
-    <h1 style="text-align: center; font-size: 36px; font-weight: bold; color: #ff4400;">Bienvenidos al sitio oficial de Wrektor</h1> 
+<div id="cursor-glow" aria-hidden="true"></div>
 
-    <p style="text-align: center;">
-        <a href="https://www.instagram.com/wrektor_oficial/" class="btn-dark-aesthetic">Insta</a>
-         <a href="https://www.tiktok.com/@wrektor_official?is_from_webapp=1&sender_device=pc" class="btn-dark-aesthetic">Tiktok</a>
-    </p>
-    <p style="text-align: center;">
-        <a href="#" class="btn-dark-aesthetic">Spotify (Futuramente)</a>
-    </p>
-</header>
+<div class="wrap">
 
-    <section>
-        <h2>Biografía</h2>
-        <p>Somos una banda formada en 2024 en Segovia por unos chavales que se aburren que flipas.</p>
-    </section>
+  <section class="hero">
+    <canvas id="bg-fx" aria-hidden="true"></canvas>
+    <h1 class="glitch" data-text="WREKTOR">WREK<span>TOR</span></h1>
+    <p class="tagline">Banda formada en 2024 en Segovia. Ruido, volumen y unos chavales que se aburrían demasiado.</p>
+    <nav class="social-row">
+      <a href="https://www.instagram.com/wrektor_oficial/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.tiktok.com/@wrektor_official?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener">TikTok</a>
+      <a class="muted" aria-disabled="true">Spotify — próximamente</a>
+    </nav>
+  </section>
 
-    <section>
-        <h2>Próximas Fechas:</h2>
-        <ul>
-        <li>
-            <span>⚡ <strong>22 de Noviembre:</strong> Concierto Especial</span>
-            <a href="#" class="btn-dark-aesthetic">Más info</a>
-        </li>
-    </ul>
-        <li><strong>15 de Octubre:</strong>Ejemplo 1 - <a href="#" class="btn-dark-aesthetic">Comprar Entradas</a> </li>
-            <li><strong>22 de Abril:</strong>Ejemplo 2 - <a href="#" class="btn-dark-aesthetic">Más info</a></li>
-            <li><strong>31 de Mayo:</strong>Ejemplo 3 - <a href="#" class="btn-dark-aesthetic">Más info</a></li>
-            <li><strong> 5 de Junio:</strong>Ejemplo 4 - <a href="#" class="btn-dark-aesthetic">Más info</a></li>
+  <section class="bio">
+    <div class="stat">24<small>Desde</small></div>
+    <p>Wrektor nace en Segovia entre ensayos improvisados y demasiado tiempo libre. Sin más pretensión que hacer ruido y ver hasta dónde llega.</p>
+  </section>
 
-        </ul>
-    </section>
+  <section class="dates">
+    <h2>Próximas fechas</h2>
 
-    <footer>
-        <h2>Contacto</h2>
-        <p>Para contrataciones: <a href="mailto:wrektor.off@gmail.com">wrektor.off@gmail.com</a></p>
-    </footer>
+    <div class="date-item featured">
+      <span class="day">22</span>
+      <span class="month">NOV</span>
+      <div class="info">
+        <div class="title">Concierto especial</div>
+        <div class="venue">Segovia</div>
+        <div class="countdown" data-target="2026-12-31T23:59:59" aria-live="off">
+          <div class="cd-unit"><span class="cd-num" data-unit="d">00</span><span class="cd-label">días</span></div>
+          <div class="cd-unit"><span class="cd-num" data-unit="h">00</span><span class="cd-label">h</span></div>
+          <div class="cd-unit"><span class="cd-num" data-unit="m">00</span><span class="cd-label">min</span></div>
+          <div class="cd-unit"><span class="cd-num" data-unit="s">00</span><span class="cd-label">seg</span></div>
+        </div>
+      </div>
+      <a class="action" href="#">Más info</a>
+    </div>
+
+    <div class="date-item">
+      <span class="day">15</span>
+      <span class="month">OCT</span>
+      <div class="info">
+        <div class="title">Ejemplo 1</div>
+        <div class="venue">Sala por confirmar</div>
+      </div>
+      <a class="action" href="#">Entradas</a>
+    </div>
+
+    <div class="date-item">
+      <span class="day">22</span>
+      <span class="month">ABR</span>
+      <div class="info">
+        <div class="title">Ejemplo 2</div>
+        <div class="venue">Sala por confirmar</div>
+      </div>
+      <a class="action" href="#">Más info</a>
+    </div>
+
+    <div class="date-item">
+      <span class="day">31</span>
+      <span class="month">MAY</span>
+      <div class="info">
+        <div class="title">Ejemplo 3</div>
+        <div class="venue">Sala por confirmar</div>
+      </div>
+      <a class="action" href="#">Más info</a>
+    </div>
+
+    <div class="date-item">
+      <span class="day">5</span>
+      <span class="month">JUN</span>
+      <div class="info">
+        <div class="title">Ejemplo 4</div>
+        <div class="venue">Sala por confirmar</div>
+      </div>
+      <a class="action" href="#">Más info</a>
+    </div>
+  </section>
+
+  <footer>
+    <h2>Contacto</h2>
+    <p>Para contrataciones: <a href="mailto:wrektor.off@gmail.com">wrektor.off@gmail.com</a></p>
+    <p class="fine">Wrektor · Segovia · 2024</p>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- Particle network in the hero ---
+  var canvas = document.getElementById('bg-fx');
+  var hero = document.querySelector('.hero');
+  if (canvas && hero) {
+    var ctx = canvas.getContext('2d');
+    var w, h, particles, raf;
+
+    function resize() {
+      w = canvas.width = hero.clientWidth;
+      h = canvas.height = hero.clientHeight;
+    }
+
+    function build() {
+      var count = Math.max(18, Math.min(55, Math.floor(w / 26)));
+      particles = [];
+      for (var i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          r: Math.random() * 1.5 + 0.6
+        });
+      }
+    }
+
+    function frame() {
+      ctx.clearRect(0, 0, w, h);
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > w) p.vx *= -1;
+        if (p.y < 0 || p.y > h) p.vy *= -1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 61, 26, 0.55)';
+        ctx.fill();
+      }
+      for (var a = 0; a < particles.length; a++) {
+        for (var b = a + 1; b < particles.length; b++) {
+          var dx = particles[a].x - particles[b].x;
+          var dy = particles[a].y - particles[b].y;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 118) {
+            ctx.strokeStyle = 'rgba(255, 61, 26, ' + (0.14 * (1 - dist / 118)) + ')';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(particles[a].x, particles[a].y);
+            ctx.lineTo(particles[b].x, particles[b].y);
+            ctx.stroke();
+          }
+        }
+      }
+      if (!reduced) raf = requestAnimationFrame(frame);
+    }
+
+    resize();
+    build();
+    frame();
+    window.addEventListener('resize', function () {
+      cancelAnimationFrame(raf);
+      resize();
+      build();
+      frame();
+    });
+  }
+
+  // --- Cursor glow follows the pointer ---
+  if (!reduced) {
+    var glow = document.getElementById('cursor-glow');
+    if (glow) {
+      window.addEventListener('pointermove', function (e) {
+        glow.style.setProperty('--mx', e.clientX + 'px');
+        glow.style.setProperty('--my', e.clientY + 'px');
+      });
+    }
+  }
+
+  // --- Reveal tour dates as they scroll into view, alternating side ---
+  var items = document.querySelectorAll('.date-item');
+  var heading = document.querySelector('.dates h2');
+  if (reduced || !('IntersectionObserver' in window)) {
+    items.forEach(function (el) { el.classList.add('is-visible'); });
+    if (heading) heading.classList.add('is-visible');
+  } else {
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    items.forEach(function (el, i) {
+      el.classList.add(i % 2 === 0 ? 'from-left' : 'from-right');
+      el.style.transitionDelay = (i * 70) + 'ms';
+      obs.observe(el);
+    });
+    if (heading) obs.observe(heading);
+  }
+
+  // --- Live countdown to the featured show ---
+  var cd = document.querySelector('.countdown');
+  if (cd) {
+    var target = new Date(cd.getAttribute('data-target')).getTime();
+    var nums = {
+      d: cd.querySelector('[data-unit="d"]'),
+      h: cd.querySelector('[data-unit="h"]'),
+      m: cd.querySelector('[data-unit="m"]'),
+      s: cd.querySelector('[data-unit="s"]')
+    };
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function tick() {
+      var diff = target - Date.now();
+      if (diff <= 0) {
+        nums.d.textContent = nums.h.textContent = nums.m.textContent = nums.s.textContent = '00';
+        clearInterval(timer);
+        return;
+      }
+      var s = Math.floor(diff / 1000);
+      var d = Math.floor(s / 86400); s -= d * 86400;
+      var h = Math.floor(s / 3600); s -= h * 3600;
+      var m = Math.floor(s / 60); s -= m * 60;
+      nums.d.textContent = pad(d);
+      nums.h.textContent = pad(h);
+      nums.m.textContent = pad(m);
+      nums.s.textContent = pad(s);
+    }
+    tick();
+    var timer = setInterval(tick, 1000);
+  }
+})();
+</script>
 
 </body>
 </html>
-
